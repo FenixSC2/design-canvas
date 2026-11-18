@@ -1,0 +1,42 @@
+<div class="ios-screen" data-id="spot" data-component="NavigationStack">
+  <div class="ios-scroll" data-id="spot.scroll" data-component="ScrollView">
+    <nav class="ios-nav" data-id="spot.nav" data-component="NavigationBar">
+      <button class="ios-nav-button" data-id="spot.back" data-goto="ios-today"><svg viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2L2 10l8 8"/></svg>Today</button>
+      <button class="ios-nav-button" data-id="spot.save" aria-label="Saved spot"><svg viewBox="0 0 22 22" style="width:22px;height:22px" fill="currentColor"><path d="M11 1.8l2.8 5.8 6.3.8-4.6 4.4 1.2 6.3L11 16l-5.7 3.1 1.2-6.3L1.9 8.4l6.3-.8z"/></svg></button>
+    </nav>
+    <header class="spot-head" data-id="spot.head">
+      <h1 class="display spot-title" data-id="spot.title">West Pier</h1>
+      <p class="spot-place" data-id="spot.place">Brighton · shingle, shelves steeply</p>
+      <span class="flag" data-id="spot.flag"><span class="flag-mark"></span><span data-id="spot.flag.label">Swim with care · lifeguards from 10:00</span></span>
+    </header>
+
+    <section class="tide" data-id="spot.tide" data-component="Chart">
+      <div class="tide-head" data-id="spot.tide.head">
+        <h2 class="eyebrow" data-id="spot.tide.label">Tide today</h2>
+        <p class="tide-now num" data-id="spot.tide.now">Falling · 1.9 m now</p>
+      </div>
+      <svg class="tide-chart" viewBox="0 0 329 132" role="img" aria-label="Tide curve: high 01:31, low 07:52, high 14:03, low 20:17">
+        <rect class="band" x="89" y="0" width="23" height="132"/>
+        <path class="area" d="M0,37.2 C7,33 14,31.8 20.9,31.8 C64,31.8 64,98.4 107.9,98.4 C150,98.4 150,22.8 192.6,22.8 C235,22.8 235,102 278,102 C305,102 315,92 329,80.4 L329,132 L0,132 Z"/>
+        <path class="curve" d="M0,37.2 C7,33 14,31.8 20.9,31.8 C64,31.8 64,98.4 107.9,98.4 C150,98.4 150,22.8 192.6,22.8 C235,22.8 235,102 278,102 C305,102 315,92 329,80.4"/>
+        <line class="now" x1="84.5" y1="0" x2="84.5" y2="132"/>
+        <circle class="now-dot" cx="84.5" cy="84" r="5"/>
+      </svg>
+      <div class="tide-times" data-id="spot.tide.times"><span><b>01:31</b>High 4.9 m</span><span><b>07:52</b>Low 1.2 m</span><span><b>14:03</b>High 5.4 m</span><span><b>20:17</b>Low 1.0 m</span></div>
+    </section>
+
+    <h3 class="ios-section-label" data-id="spot.conditions.label">Conditions at 06:00</h3>
+    <ul class="ios-list" data-id="spot.conditions" data-component="List">
+      <li class="ios-row" data-id="spot.water"><span>Water</span><span class="ios-row-value num">13.4 °C</span></li>
+      <li class="ios-row" data-id="spot.air"><span>Air</span><span class="ios-row-value num">8 °C, feels 5 °C</span></li>
+      <li class="ios-row" data-id="spot.swell"><span>Swell</span><span class="ios-row-value num">0.4 m every 7 s</span></li>
+      <li class="ios-row" data-id="spot.wind"><span>Wind</span><span class="ios-row-value num">9 kn SW, 16 kn by 11:00</span></li>
+      <li class="ios-row" data-id="spot.quality"><span>Water quality</span><span class="ios-row-value status-swim">Excellent</span></li>
+    </ul>
+
+    <div class="spot-cta" data-id="spot.cta">
+      <button class="btn btn-block" data-id="spot.log" data-goto="ios-log">Log a swim here</button>
+      <p class="footnote" data-id="spot.tip">Tell someone onshore when you expect to be out.</p>
+    </div>
+  </div>
+</div>

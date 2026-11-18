@@ -1,0 +1,16 @@
+/* design-canvas Android kit: Material 3 metrics, colors and type from the project's tokens.
+   Class names map to Jetpack Compose (Scaffold, TopAppBar, NavigationBar, ListItem, ...). */
+html[data-platform="android"] body {
+  font-family: var(--font-text, Roboto, "Google Sans", system-ui, sans-serif);
+  font-size: var(--text-md, 16px); line-height: 1.4;
+  background: var(--color-bg, oklch(0.98 0.004 260)); color: var(--color-ink, oklch(0.2 0.01 260));
+}
+.md-screen { height: 100%; display: flex; flex-direction: column; overflow: hidden; }
+.md-scroll { flex: 1; overflow-y: auto; padding-top: var(--safe-top); scrollbar-width: none; }
+.md-topbar { display: flex; align-items: center; gap: var(--space-4, 16px); min-height: 64px; padding: 0 var(--space-4, 16px); }
+.md-topbar-title { font-size: 22px; font-weight: 400; }
+.md-list-item { display: flex; align-items: center; gap: var(--space-4, 16px); min-height: 56px; padding: var(--space-2, 8px) var(--space-4, 16px); }
+.md-navbar { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; min-height: calc(80px + var(--safe-bottom)); padding-bottom: var(--safe-bottom); background: var(--color-surface, oklch(0.95 0.006 260)); }
+.md-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 12px; font-weight: 500; background: none; border: 0; }
+.md-nav-item[aria-current="page"] svg { background: var(--color-fill, oklch(0.88 0.04 260)); border-radius: 16px; padding: 4px 20px; box-sizing: content-box; }
+.md-fab { position: absolute; right: 16px; bottom: calc(96px + var(--safe-bottom)); min-width: 56px; height: 56px; border-radius: 16px; border: 0; }

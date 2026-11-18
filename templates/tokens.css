@@ -1,0 +1,49 @@
+/* Design tokens: the only place raw values live. Screens and components use var(--…).
+   The canvas inspector offers exactly these as choices, and the Audit tab flags anything
+   on screen that isn't one of them. Replace every value here for the project:
+   start from the scene sentence (who, where, what light, what mood), then pick a color
+   strategy (restrained / committed / full palette / drenched). These are placeholders. */
+:root {
+  /* color: tinted neutrals (never #000 / #fff) + roles */
+  --color-bg: oklch(0.975 0.005 250);
+  --color-surface: oklch(0.995 0.003 250);
+  --color-fill: oklch(0.93 0.006 250);
+  --color-line: oklch(0.88 0.006 250);
+  --color-ink: oklch(0.22 0.015 250);
+  --color-ink-2: oklch(0.42 0.012 250);
+  --color-ink-3: oklch(0.52 0.01 250);
+  --color-accent: oklch(0.55 0.17 250);
+  --color-on-accent: oklch(0.985 0.004 250);
+
+  /* type: one scale, steps ≥ 1.2 apart */
+  --font-display: system-ui, sans-serif;
+  --font-text: system-ui, sans-serif;
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-md: 16px;
+  --text-lg: 20px;
+  --text-xl: 25px;
+  --text-2xl: 32px;
+  --text-3xl: 44px;
+  --text-4xl: 64px;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* space: 4px base, vary it for rhythm */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+}

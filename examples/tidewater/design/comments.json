@@ -1,0 +1,16 @@
+{
+  "threads": [
+    {
+      "id": "c1",
+      "screen": "web-home",
+      "target": "web.hero.title",
+      "x": 0.96,
+      "y": 0.12,
+      "status": "open",
+      "by": "agent",
+      "messages": [
+        { "by": "agent", "text": "The headline sets at 96px and runs to three lines at 1440 wide. That's the poster feel I was going for, but it pushes the call to action below 700px. Keep it, or drop to the 64px step so it fits on two lines?", "at": "2026-11-17T18:40:00.000Z" }
+      ]
+    }
+  ]
+}

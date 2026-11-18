@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design Canvas</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='1' y='1' width='14' height='14' rx='4' fill='%236b5cf0'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/gui/app.css">
+</head>
+<body>
+<header class="bar">
+  <div class="bar-left">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <strong id="proj-name">Design Canvas</strong>
+    <span id="proj-meta" class="muted"></span>
+  </div>
+  <div class="modes" role="toolbar" aria-label="Mode">
+    <button data-mode="select" aria-pressed="true" title="Select, edit, move and resize (V)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M3 2.5l9.5 5-4.2 1.1L6.6 13 3 2.5z"/></svg>Select <kbd>V</kbd></button>
+    <button data-mode="comment" aria-pressed="false" title="Pin a comment for the agent (C)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M2.5 3.5h11v7h-6l-3 2.5v-2.5h-2z"/></svg>Comment <kbd>C</kbd></button>
+    <button data-mode="preview" aria-pressed="false" title="Click through like a prototype (P)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M4.5 3v10l8-5z"/></svg>Preview <kbd>P</kbd></button>
+  </div>
+  <div class="bar-right">
+    <button id="audit-chip" class="chip" title="Design-system audit"><span class="dot"></span><span id="audit-label">Audit</span></button>
+    <div class="zoom">
+      <button id="zoom-out" title="Zoom out (−)">−</button>
+      <button id="zoom-label" title="Zoom to fit (⇧1)">100%</button>
+      <button id="zoom-in" title="Zoom in (+)">+</button>
+    </div>
+    <button id="send" class="primary" disabled title="Send your edits and comments to the agent">Send <span class="badge" id="send-count">0</span></button>
+  </div>
+</header>
+<div class="main">
+  <aside class="left" aria-label="Screens and changes">
+    <h2>Screens</h2>
+    <ul id="screen-list"></ul>
+    <h2>Changes <span id="changes-count" class="muted"></span></h2>
+    <ol id="change-list"></ol>
+  </aside>
+  <div id="canvas" class="canvas"><div id="world"></div></div>
+  <aside class="right" aria-label="Inspector">
+    <nav class="tabs" role="tablist">
+      <button role="tab" data-tab="inspect" aria-selected="true">Inspect</button>
+      <button role="tab" data-tab="audit" aria-selected="false">Audit<span class="n" id="n-audit"></span></button>
+      <button role="tab" data-tab="comments" aria-selected="false">Comments<span class="n" id="n-comments"></span></button>
+    </nav>
+    <div id="panel"></div>
+  </aside>
+</div>
+<div id="shield"></div>
+<div id="popover" role="dialog"></div>
+<div id="banner" role="status"></div>
+<div id="toast" role="status"></div>
+<script type="module" src="/gui/app.js"></script>
+</body>
+</html>

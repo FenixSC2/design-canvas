@@ -1,0 +1,40 @@
+<div class="ios-screen" data-id="today" data-component="NavigationStack">
+  <div class="ios-scroll" data-id="today.scroll" data-component="ScrollView">
+    <header class="today-head" data-id="today.head">
+      <p class="eyebrow" data-id="today.date">Saturday 14 March · sunrise 06:11</p>
+      <h1 class="ios-large-title" data-id="today.title">This morning</h1>
+    </header>
+
+    <section class="spot-hero" data-id="today.primary" data-component="NavigationLink" data-goto="ios-spot">
+      <div class="spot-hero-top" data-id="today.primary.top">
+        <h2 class="spot-name" data-id="today.primary.name">West Pier, Brighton</h2>
+        <span class="flag" data-id="today.primary.flag"><span class="flag-mark"></span><span data-id="today.primary.flag.label">Swim with care · unpatrolled until 10:00</span></span>
+      </div>
+      <p class="water-temp display" data-id="today.primary.temp"><span class="num">13.4°</span><span class="unit">water</span></p>
+      <dl class="readings" data-id="today.primary.readings">
+        <div class="reading" data-id="today.primary.swell"><dt>Swell</dt><dd>0.4 m</dd></div>
+        <div class="reading" data-id="today.primary.wind"><dt>Wind</dt><dd>9 kn SW</dd></div>
+        <div class="reading" data-id="today.primary.tide"><dt>Low tide</dt><dd>07:52</dd></div>
+      </dl>
+      <div class="window" data-id="today.window">
+        <div class="window-track" aria-hidden="true"><span class="window-best"></span></div>
+        <div class="window-scale" aria-hidden="true"><span>05:00</span><span>07:00</span><span>09:00</span><span>11:00</span></div>
+        <p class="window-label" data-id="today.window.label"><strong>Best window 06:30 to 08:10.</strong> Calm until the onshore breeze picks up.</p>
+      </div>
+    </section>
+
+    <h3 class="ios-section-label" data-id="today.others.label">Your other spots</h3>
+    <ul class="ios-list" data-id="today.others" data-component="List">
+      <li class="ios-row" data-id="today.others.seaford" data-component="NavigationLink"><span class="dot stop"></span><span class="row-main"><span class="row-title">Seaford Bay</span><span class="row-sub">Red flag · rip current</span></span><span class="ios-row-value num">12.6°</span><svg class="ios-chevron" viewBox="0 0 8 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 1.5l5 5-5 5"/></svg></li>
+      <li class="ios-row" data-id="today.others.shoreham" data-component="NavigationLink"><span class="dot swim"></span><span class="row-main"><span class="row-title">Shoreham Beach</span><span class="row-sub">Good to swim</span></span><span class="ios-row-value num">13.1°</span><svg class="ios-chevron" viewBox="0 0 8 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 1.5l5 5-5 5"/></svg></li>
+      <li class="ios-row" data-id="today.others.saltdean" data-component="NavigationLink"><span class="dot caution"></span><span class="row-main"><span class="row-title">Saltdean</span><span class="row-sub">Choppy after 08:00</span></span><span class="ios-row-value num">12.8°</span><svg class="ios-chevron" viewBox="0 0 8 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 1.5l5 5-5 5"/></svg></li>
+    </ul>
+    <button class="quick-log" data-id="today.log-elsewhere" data-goto="ios-log">Swam somewhere else? <span data-id="today.log-elsewhere.action">Log it</span></button>
+  </div>
+  <nav class="ios-tabbar" data-id="today.tabs" data-component="TabView">
+    <button class="ios-tab" data-id="today.tabs.today" aria-current="page"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 13a6 6 0 0 1 12 0"/><path d="M3 17c2 0 2-1.5 4-1.5s2 1.5 4 1.5 2-1.5 4-1.5 2 1.5 4 1.5 2-1.5 4-1.5"/><path d="M3 21c2 0 2-1.5 4-1.5s2 1.5 4 1.5 2-1.5 4-1.5 2 1.5 4 1.5 2-1.5 4-1.5"/><path d="M13 3.5v2M5.5 6.5l1.4 1.4M20.5 6.5l-1.4 1.4"/></svg>Today</button>
+    <button class="ios-tab" data-id="today.tabs.spots"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M13 23s7-6.4 7-12a7 7 0 0 0-14 0c0 5.6 7 12 7 12z"/><circle cx="13" cy="11" r="2.5"/></svg>Spots</button>
+    <button class="ios-tab" data-id="today.tabs.log"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M6 4.5h12a2 2 0 0 1 2 2v15H8a2 2 0 0 1-2-2z"/><path d="M6 19.5a2 2 0 0 1 2-2h12M10 9h6M10 12.5h4"/></svg>Log</button>
+    <button class="ios-tab" data-id="today.tabs.you"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="13" cy="9.5" r="4"/><path d="M5 22c.8-4 4-6 8-6s7.2 2 8 6" stroke-linecap="round"/></svg>You</button>
+  </nav>
+</div>

@@ -1,0 +1,40 @@
+<div class="ios-sheet" data-id="log" data-component="Sheet">
+  <div class="sheet-peek" aria-hidden="true"></div>
+  <div class="ios-sheet-body" data-id="log.body">
+    <div class="ios-grabber" aria-hidden="true"></div>
+    <nav class="ios-nav" data-id="log.nav" data-component="NavigationBar">
+      <button class="ios-nav-button" data-id="log.cancel" data-goto="ios-spot">Cancel</button>
+      <span class="ios-nav-title" data-id="log.title">Log swim</span>
+      <button class="ios-nav-button strong" data-id="log.save" data-goto="ios-today">Save</button>
+    </nav>
+    <div class="log-form" data-id="log.form" data-component="Form">
+      <ul class="ios-list" data-id="log.where" data-component="Section">
+        <li class="ios-row" data-id="log.spot"><span>Spot</span><span class="ios-row-value">West Pier, Brighton</span></li>
+        <li class="ios-row" data-id="log.when"><span>Went in</span><span class="ios-row-value num">Today, 06:42</span></li>
+      </ul>
+      <section class="log-block" data-id="log.minutes">
+        <h2 class="log-label" data-id="log.minutes.label">Time in the water</h2>
+        <div class="minutes" data-id="log.minutes.box" data-component="Stepper">
+          <p class="minutes-value display" data-id="log.minutes.value"><span class="num">18</span><span class="unit">min</span></p>
+          <div class="stepper" data-id="log.minutes.stepper">
+            <button data-id="log.minutes.less" aria-label="One minute less">−</button>
+            <button data-id="log.minutes.more" aria-label="One minute more">+</button>
+          </div>
+        </div>
+      </section>
+      <section class="log-block" data-id="log.felt">
+        <h2 class="log-label" data-id="log.felt.label">How did it feel?</h2>
+        <div class="ios-segmented" data-id="log.felt.picker" data-component="Picker(.segmented)">
+          <button data-id="log.felt.bracing">Bracing</button>
+          <button data-id="log.felt.cold" aria-pressed="true">Cold</button>
+          <button data-id="log.felt.fine">Fine</button>
+          <button data-id="log.felt.warm">Warm</button>
+        </div>
+      </section>
+      <ul class="ios-list" data-id="log.extra" data-component="Section">
+        <li class="ios-row" data-id="log.buddy"><span>Swam with a buddy</span><button class="ios-switch" role="switch" aria-checked="true" aria-label="Swam with a buddy" data-id="log.buddy.toggle" style="margin-left:auto" data-component="Toggle"></button></li>
+        <li class="ios-row" data-id="log.notes"><textarea class="notes" data-id="log.notes.field" aria-label="Notes">Glassy out to the pier, then a short chop on the way back.</textarea></li>
+      </ul>
+    </div>
+  </div>
+</div>
