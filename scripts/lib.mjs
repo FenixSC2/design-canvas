@@ -15,6 +15,15 @@ export const DEVICES = {
   android: { width: 412, height: 915, autoHeight: false, phone: true, label: "Android" },
 };
 
+/** The motion vocabulary kit/motion.css implements. Screens use these as data-* attributes. */
+export const MOTION = {
+  enter: ["fade", "rise", "scale", "slide-left", "slide-right", "drop"],
+  speed: ["fast", "base", "slow"],
+  ease: ["out", "in-out", "emphasized"],
+  press: ["scale", "dim"],
+  transition: ["push", "sheet", "fade", "none"],
+};
+
 // ---------------------------------------------------------------------------------------------
 // Project files
 
@@ -28,6 +37,10 @@ export function paths(dir) {
     comments: path.join(d, "comments.json"),
     changeset: path.join(d, "changeset.json"),
     applying: path.join(d, "changeset.applying.json"),
+    variants: path.join(d, "variants.json"),
+    proposal: path.join(d, "proposal"),
+    proposalMeta: path.join(d, "proposal", "proposal.json"),
+    compare: path.join(d, ".canvas", "compare"),
     internal: path.join(d, ".canvas"),
     state: path.join(d, ".canvas", "state.json"),
     history: path.join(d, ".canvas", "history"),
@@ -62,6 +75,11 @@ export function readComments(dir) {
 }
 export function writeComments(dir, c) {
   writeJson(paths(dir).comments, c);
+}
+
+export function readVariants(dir) {
+  const v = readJson(paths(dir).variants, null);
+  return { sets: v?.sets ?? [] };
 }
 
 export function readState(dir) {
@@ -239,6 +257,7 @@ export function lintProject(dir) {
   }
   if (fs.existsSync(P.components)) checkCss(fs.readFileSync(P.components, "utf8"), "components.css", warnings, {});
 
+  const interactiveClasses = new Set();
   for (const s of project.screens) {
     const file = path.join(P.dir, s.file);
     const where = s.file;
@@ -254,12 +273,58 @@ export function lintProject(dir) {
       if (n.attrs.style) checkCss(n.attrs.style, at, warnings, { inline: true });
       if (n.tag === "style") checkCss(html.slice(n.innerStart, n.innerEnd), at, warnings, {});
       if (n.attrs["data-goto"] && !ids.has(n.attrs["data-goto"])) warnings.push({ where: at, msg: `data-goto="${n.attrs["data-goto"]}" points at no screen` });
+      const mo = n.attrs["data-motion"];
+      if (mo !== undefined && !MOTION.enter.includes(mo)) warnings.push({ where: at, msg: `data-motion="${mo}" isn't a preset (${MOTION.enter.join(", ")})` });
+      const tr = n.attrs["data-transition"];
+      if (tr !== undefined && !MOTION.transition.includes(tr)) warnings.push({ where: at, msg: `data-transition="${tr}" isn't a preset (${MOTION.transition.join(", ")})` });
+      if (tr !== undefined && n.attrs["data-goto"] === undefined) warnings.push({ where: at, msg: "data-transition without data-goto does nothing" });
+      if (n.tag === "button" || n.tag === "a" || n.attrs.role === "button") { const cl = (n.attrs.class ?? "").split(/\s+/).filter(Boolean); if (cl.length) interactiveClasses.add(cl.join(" ")); }
     }
     // copy checks on text only
     const text = html.replace(/<style[\s\S]*?<\/style>|<script[\s\S]*?<\/script>|<svg[\s\S]*?<\/svg>/gi, "").replace(/<[^>]+>/g, " ");
     if (/—|&mdash;/.test(text)) warnings.push({ where, msg: "Em dash in copy. Use a comma, colon, period or parentheses." });
     if (/\s--\s/.test(text)) warnings.push({ where, msg: "\"--\" used as a dash in copy." });
     if (/lorem ipsum/i.test(text)) warnings.push({ where, msg: "Lorem ipsum. Write real copy: the mock is judged on it." });
+  }
+
+  // Interaction states: every clickable component needs a visible focus style, and should
+  // answer hover and press. Kit classes bring their own.
+  if (fs.existsSync(P.components)) {
+    const css = fs.readFileSync(P.components, "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+    const defined = new Set([...css.matchAll(/\.([a-zA-Z][\w-]*)/g)].map((m) => m[1]));
+    const globalFocus = /(^|[\s,}])(:focus-visible|\*:focus-visible)\s*[{,]/.test(css);
+    const missing = { hover: [], focus: [], active: [] };
+    // Per element: it's covered when any of its own classes (or a kit class on it) has the state.
+    const has = (c, st) => new RegExp(`\\.${c.replace(/-/g, "\\-")}(\\.[\\w-]+|\\[[^\\]]*\\])*:${st}`).test(css);
+    for (const list of interactiveClasses) {
+      const cls = list.split(" ");
+      if (cls.some((c) => /^(ios|md)-/.test(c))) continue;
+      const own = cls.filter((c) => defined.has(c));
+      if (!own.length) continue;
+      const name = own[0];
+      if (!own.some((c) => has(c, "hover")) && !missing.hover.includes(name)) missing.hover.push(name);
+      if (!globalFocus && !own.some((c) => has(c, "focus-visible")) && !missing.focus.includes(name)) missing.focus.push(name);
+      if (!own.some((c) => has(c, "active")) && !missing.active.includes(name)) missing.active.push(name);
+    }
+    if (missing.focus.length) warnings.push({ where: "components.css", msg: `No :focus-visible style for ${missing.focus.map((c) => "." + c).join(", ")}. Keyboard users can't see where they are.` });
+    if (missing.hover.length) info.push({ where: "components.css", msg: `No :hover state for ${missing.hover.map((c) => "." + c).join(", ")}` });
+    if (missing.active.length) info.push({ where: "components.css", msg: `No :active (pressed) state for ${missing.active.map((c) => "." + c).join(", ")}` });
+    if (/@keyframes|animation\s*:/.test(css) && !/prefers-reduced-motion/.test(css)) warnings.push({ where: "components.css", msg: "Animations without a prefers-reduced-motion fallback" });
+  }
+
+  // Variants waiting for the user: each option must replace the target with the same root id.
+  const vs = readVariants(dir);
+  for (const set of vs.sets.filter((x) => x.status !== "resolved")) {
+    const sc = project.screens.find((s) => s.id === set.screen);
+    if (!sc) { errors.push({ where: "variants.json", msg: `Variant set ${set.id}: no screen ${set.screen}` }); continue; }
+    const html = fs.existsSync(path.join(P.dir, sc.file)) ? fs.readFileSync(path.join(P.dir, sc.file), "utf8") : "";
+    if (!indexIds(html).ids.has(set.target)) errors.push({ where: "variants.json", msg: `Variant set ${set.id}: no element ${set.target} on ${set.screen}` });
+    if (!set.options?.length) errors.push({ where: "variants.json", msg: `Variant set ${set.id} has no options` });
+    for (const o of set.options ?? []) {
+      const first = parseHtml(o.html ?? "").children[0];
+      if (first?.attrs["data-id"] !== set.target) errors.push({ where: "variants.json", msg: `Variant ${set.id}/${o.id}: its root element must keep data-id="${set.target}"` });
+      if (o.css) checkCss(o.css, `variants.json ${set.id}/${o.id}`, warnings, {});
+    }
   }
 
   const c = readComments(dir);
@@ -275,6 +340,13 @@ function checkCss(css, where, warnings, { allowRawColor = false, inline = false 
   if (/border-(left|right)(-width)?\s*:\s*([2-9]|\d{2,})(\.\d+)?px/.test(s)) w("Side-stripe border (>1px on one side). Use a full border, a tint, or nothing.");
   if (/background-clip\s*:\s*text/.test(s)) w("Gradient text (background-clip: text). Use one solid color.");
   if (/backdrop-filter/.test(s)) w("backdrop-filter: glass effects only when purposeful (e.g. a sheet over content).");
+  // motion
+  if (/transition(-property)?\s*:[^;]*\ball\b/.test(s)) w("transition: all. Name the properties you mean (transform, opacity, color).");
+  const LAYOUT = /\b(width|height|top|left|right|bottom|margin[\w-]*|padding[\w-]*|max-height|min-height)\b/;
+  for (const m of s.matchAll(/transition(-property)?\s*:([^;}]*)/g)) if (LAYOUT.test(m[2].replace(/var\([^)]*\)|cubic-bezier\([^)]*\)/g, ""))) { w(`Transition on a layout property (${m[2].trim().slice(0, 40)}). Animate transform and opacity instead.`); break; }
+  for (const m of s.matchAll(/@keyframes\s+([\w-]+)\s*\{([\s\S]*?\})\s*\}/g)) if (LAYOUT.test(m[2].replace(/var\([^)]*\)/g, ""))) w(`@keyframes ${m[1]} animates a layout property. Use transform and opacity.`);
+  for (const m of s.matchAll(/cubic-bezier\(\s*([-\d.]+)\s*,\s*([-\d.]+)\s*,\s*([-\d.]+)\s*,\s*([-\d.]+)\s*\)/g)) if (+m[2] > 1 || +m[2] < 0 || +m[4] > 1 || +m[4] < 0) { w(`Overshooting easing ${m[0]}: no bounce or elastic. Ease out with an exponential curve.`); break; }
+  for (const m of s.matchAll(/(transition|animation)(-duration)?\s*:[^;]*?(\d+(\.\d+)?)(ms|s)\b/g)) { const ms = m[5] === "s" ? +m[3] * 1000 : +m[3]; if (ms > 700) { w(`${m[1]} of ${ms}ms: UI motion over ~500ms feels sluggish.`); break; } }
   if (/(^|[^-\w])(#000(000)?|#fff(fff)?)\b/i.test(s) || /:\s*(black|white)\s*(;|$)/i.test(s)) w("Pure #000/#fff. Tint neutrals toward the brand hue.");
   if (!allowRawColor) {
     const raw = s.replace(/var\([^)]*\)/g, "").match(/#[0-9a-f]{3,8}\b|\b(rgba?|hsla?|oklch|oklab|lab|lch)\(/gi);
@@ -288,34 +360,47 @@ function checkCss(css, where, warnings, { allowRawColor = false, inline = false 
 // ---------------------------------------------------------------------------------------------
 // Changesets
 
-export const OP_LABEL = {
-  text: "text", style: "style", resize: "resize", move: "move", remove: "remove",
-  duplicate: "duplicate", sketch: "sketch",
-};
-
-/** Ops the CLI applies to the source itself (pure structure/content). The rest is the agent's craft. */
-export const MECHANICAL = new Set(["text", "remove", "move", "duplicate"]);
+/** Ops the CLI applies to the source itself (pure structure, content and attributes). The rest is the agent's craft. */
+export const MECHANICAL = new Set(["text", "remove", "move", "duplicate", "attr", "pick-variant"]);
 
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const q = (s, n = 60) => { const t = String(s ?? "").replace(/\s+/g, " "); return `"${t.length > n ? t.slice(0, n - 1) + "…" : t}"`; };
 
+/** Where a style-like op applies: a component rule, a breakpoint, an interaction state. */
+function scopeOf(op) {
+  const parts = [];
+  if (op.component) parts.push(`component ${op.component} (every instance)`);
+  if (op.state) parts.push(`:${op.state === "pressed" ? "active" : op.state === "focus" ? "focus-visible" : op.state}`);
+  if (op.viewport) parts.push(`@media (max-width: ${op.viewport}px)`);
+  return parts.length ? `  [${parts.join(" · ")}]` : "";
+}
+
 function describeOp(op) {
+  const who = op.component ?? op.id;
   switch (op.op) {
     case "text": return `${op.id}  ${q(op.before)} → ${q(op.value)}`;
-    case "style": return `${op.id}  ${op.prop}: ${op.before ?? "(inherited)"} → ${op.value}${op.token ? "" : "   ⚠ off-scale raw value"}`;
+    case "style": return `${who}  ${op.prop}: ${op.before ?? "(inherited)"} → ${op.value}${op.token ? "" : "   ⚠ off-scale raw value"}${scopeOf(op)}`;
     case "resize": {
       const parts = [];
       if (op.width !== undefined) parts.push(`width ${op.before?.width ?? "?"} → ${op.width === null ? "auto" : op.width + "px"}`);
       if (op.height !== undefined) parts.push(`height ${op.before?.height ?? "?"} → ${op.height === null ? "auto" : op.height + "px"}`);
-      return `${op.id}  ${parts.join(", ")}`;
+      return `${who}  ${parts.join(", ")}${scopeOf(op)}`;
     }
     case "move": return `${op.id}  into ${op.parent ?? "(same parent)"} at position ${op.index + 1}${op.before ? `  (was ${op.before.parent === op.parent ? "" : op.before.parent + " "}position ${op.before.index + 1})` : ""}`;
     case "remove": return `${op.id}${op.label ? "  " + q(op.label) : ""}`;
     case "duplicate": return `${op.id}  → copy with ids suffixed "${op.suffix}"`;
-    case "sketch": return `new ${op.newId} in ${op.parent} at index ${op.index}: ${q(op.note, 120)}`;
+    case "sketch": return `new ${op.newId} in ${op.parent} at position ${op.index + 1}: ${q(op.note, 120)}`;
+    case "attr": return `${op.id}  ${Object.entries(op.attrs).map(([k, v]) => (v === null ? `remove ${k}` : `${k}="${v}"`)).join(" ")}`;
+    case "pick-variant": return `${op.id}  ← variant ${op.set}/${op.option}${op.label ? " " + q(op.label) : ""}`;
     default: return JSON.stringify(op);
   }
 }
+
+const REQ = {
+  variants: (r) => `variants  ${r.screen} › ${r.id}: ${r.count ?? 3} alternatives${r.prompt ? ", " + q(r.prompt, 200) : ""}  (request ${r.rid})`,
+  test: (r) => `test      build and run the app ${r.target === "device" ? "on a device" : r.target === "simulator" ? "in the simulator" : r.target === "web" ? "in the browser" : r.target}${r.screens?.length ? ", starting at " + r.screens.join(", ") : ""}; then compare it with the mocks`,
+  compare: (r) => `compare   capture the build again and compare it with ${r.screens?.length ? r.screens.join(", ") : "every mapped screen"}`,
+};
 
 export function formatChangeset(dir, cs, { applied } = {}) {
   const project = loadProject(dir);
@@ -325,26 +410,35 @@ export function formatChangeset(dir, cs, { applied } = {}) {
     byScreen.get(op.screen).push(op);
   }
   const lines = [];
-  const nC = (cs.comments ?? []).length;
-  lines.push(`Changeset sent ${cs.sentAt ?? "?"} · ${(cs.ops ?? []).length} edit(s) · ${nC} comment(s)/repl(ies)`);
+  const comments = cs.comments ?? [], requests = cs.requests ?? [];
+  lines.push(`Changeset sent ${cs.sentAt ?? "?"} · ${(cs.ops ?? []).length} edit(s) · ${comments.length} comment(s)/repl(ies)${requests.length ? ` · ${requests.length} request(s)` : ""}`);
   if (cs.note) lines.push(`Note from the user: ${q(cs.note, 400)}`);
+
+  const pr = cs.proposal;
+  if (pr) {
+    lines.push("", `Proposal "${pr.title ?? ""}": ${pr.decision}`);
+    if (pr.decision !== "rejected") lines.push(`  screens accepted: ${pr.accepted?.join(", ") || "none"}${pr.rejected?.length ? `  ·  rejected: ${pr.rejected.join(", ")}` : ""}${pr.systemChanged ? `  ·  tokens/components: ${pr.system ? "accepted" : "rejected"}` : ""}`);
+    for (const a of pr.answers ?? []) lines.push(`  answer ${a.id}: ${q(a.answer, 200)}  (to ${q(a.question, 120)})`);
+    if (pr.reply) lines.push(`  reply: ${q(pr.reply, 400)}`);
+    if (applied) lines.push(pr.decision === "rejected" ? "  ✓ proposal discarded" : "  ✓ accepted files copied into the design");
+  }
+
   let n = 0;
   const todo = [];
   for (const [sid, ops] of byScreen) {
     const s = project.screens.find((x) => x.id === sid);
-    lines.push("", `${sid}  (${s?.file ?? "unknown screen"})`);
-    let html = s ? safeRead(path.join(paths(dir).dir, s.file)) : "";
+    lines.push("", sid === "__components" ? "Component catalog  (components.css)" : `${sid}  (${s?.file ?? "unknown screen"})`);
+    const html = s ? safeRead(path.join(paths(dir).dir, s.file)) : "";
     const idx = html ? indexIds(html).ids : new Map();
     for (const op of ops) {
       n++;
       const node = idx.get(op.id) ?? idx.get(op.parent);
       const where = node ? `  [line ${node.line}]` : "";
       const state = applied?.has(op) ? "  ✓ applied" : MECHANICAL.has(op.op) ? "" : "  → you";
-      lines.push(`  ${String(n).padStart(2)}. ${op.op.padEnd(9)} ${describeOp(op)}${where}${state}${op.note && op.op !== "sketch" ? `\n      note:${q(op.note, 300)}` : ""}`);
+      lines.push(`  ${String(n).padStart(2)}. ${op.op.padEnd(9)} ${describeOp(op)}${where}${state}${op.note && op.op !== "sketch" ? `\n      note: ${q(op.note, 300)}` : ""}`);
       if (!applied?.has(op)) todo.push({ n, op, sid });
     }
   }
-  const comments = cs.comments ?? [];
   if (comments.length) {
     lines.push("", "Comments");
     for (const c of comments) {
@@ -353,18 +447,32 @@ export function formatChangeset(dir, cs, { applied } = {}) {
       lines.push(`  ${c.thread.padEnd(5)} ${kind.padEnd(8)} ${target}  ${q(c.text, 300)}`);
     }
   }
-  lines.push("", "To do");
-  if (todo.length) {
-    const kinds = new Set(todo.map((t) => t.op.op));
-    if (!applied) lines.push("  - Run `apply` first: it applies text/remove/move/duplicate edits to the source for you.");
-    if (kinds.has("style") || kinds.has("resize")) lines.push(
-      "  - style/resize ops are the user's intent, previewed as inline styles. Express each in the design system:",
-      "    a token or a component class change, not an inline style. A resize means \"this should be wider/taller\":",
-      "    decide whether that's a max-width, a grid track, flex-basis or padding, and say what you chose.",
-      "    If the same element appears on other screens (same class/component), keep them consistent.");
-    if (kinds.has("sketch")) lines.push("  - Sketches are placeholders the user drew. Build each into real elements with data-ids, in the design system.");
-    for (const t of todo.filter((t) => !applied?.has(t.op))) if (!MECHANICAL.has(t.op.op) || !applied) lines.push(`    #${t.n} ${t.op.op} ${t.op.id ?? t.op.newId} (${t.sid})`);
+  if (requests.length) {
+    lines.push("", "Requests");
+    for (const r of requests) lines.push("  " + (REQ[r.type]?.(r) ?? JSON.stringify(r)));
   }
+
+  lines.push("", "To do");
+  const kinds = new Set(todo.map((t) => t.op.op));
+  if (todo.length && !applied && [...kinds].some((k) => MECHANICAL.has(k))) lines.push("  - Run `apply` first: it applies text/remove/move/duplicate/attribute edits and picked variants for you.");
+  if (kinds.has("style") || kinds.has("resize")) lines.push(
+    "  - style/resize ops are the user's intent, previewed as override rules. Express each in the design system:",
+    "    a token or a component class change, never an inline style. A resize means \"this should be wider/taller\":",
+    "    decide whether that's a max-width, a grid track, flex-basis or padding, and say what you chose.",
+    "    [component …] ops change the rule in components.css, for every instance.",
+    "    [:hover] / [:focus-visible] / [:active] / [:disabled] ops belong in that state's rule.",
+    "    [@media (max-width: N)] ops belong in a media query at that breakpoint, not in the base rule.",
+    "    If the same element appears on other screens (same class/component), keep them consistent.");
+  if (kinds.has("sketch")) lines.push("  - Sketches are placeholders the user drew. Build each into real elements with data-ids, in the design system.");
+  if ((cs.ops ?? []).some((o) => o.op === "pick-variant") && applied) lines.push("  - Picked variants were swapped in and their CSS appended to components.css under a /* variant … */ marker. Fold it into the component rules and remove the marker.");
+  for (const t of todo) if (!MECHANICAL.has(t.op.op)) lines.push(`    #${t.n} ${t.op.op} ${t.op.component ?? t.op.id ?? t.op.newId} (${t.sid})`);
+  if (pr && pr.decision !== "rejected" && pr.systemChanged && !pr.system) lines.push("  - The user took proposed screens but not the token/component changes. Check those screens still work with the current system.");
+  if (requests.some((r) => r.type === "variants")) lines.push(
+    "  - Variants: write them into variants.json (see references/format.md), each option a full replacement of the",
+    "    element with the same root data-id plus any CSS it needs, three genuinely different directions, then `done`.");
+  if (requests.some((r) => r.type === "test" || r.type === "compare")) lines.push(
+    "  - Test: build the app and run it where asked (simulator, device, browser). Then `compare <dir>` to capture",
+    "    each mapped screen from the build and diff it against its mock; fix what differs, or report why it can't.");
   if (comments.some((c) => !c.resolve)) lines.push(
     "  - Answer every comment with `reply <dir> <thread> \"…\"` (add --resolve when it's settled).",
     "    A question gets an answer and your pick, not a redesign. A request (\"make this a pill\") is an edit: make it.");
@@ -397,11 +505,31 @@ function reindent(block, from, to) {
   return block.split("\n").map((l, i) => (i === 0 ? l : l.startsWith(from) ? to + l.slice(from.length) : l)).join("\n");
 }
 
+const escAttr = (s) => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+
+/** Set or remove attributes on an element's open tag, leaving the rest of the tag as written. */
+export function setAttrs(html, node, attrs) {
+  let tag = html.slice(node.start, node.openEnd);
+  for (const [k, v] of Object.entries(attrs)) {
+    const re = new RegExp(`\\s${k.replace(/[.*+?^${}()|[\]\\-]/g, "\\$&")}(\\s*=\\s*("[^"]*"|'[^']*'|[^\\s"'>]+))?(?=[\\s/>])`, "i");
+    if (re.test(tag)) tag = tag.replace(re, v === null ? "" : ` ${k}="${escAttr(v)}"`);
+    else if (v !== null) tag = tag.replace(/\s*(\/?)>$/, (_, sl) => ` ${k}="${escAttr(v)}"${sl ? " /" : ""}>`);
+  }
+  return html.slice(0, node.start) + tag + html.slice(node.openEnd);
+}
+
 export function applyMechanical(html, op) {
   const { ids } = indexIds(html);
   const node = ids.get(op.id);
   if (!node) return { html, ok: false, why: `data-id "${op.id}" not found` };
   switch (op.op) {
+    case "attr": return { html: setAttrs(html, node, op.attrs), ok: true };
+    case "pick-variant": {
+      if (!op.html) return { html, ok: false, why: "the op carries no variant html" };
+      const { indent } = lineIndentAt(html, node.start);
+      const block = op.html.trim().split("\n").map((l, i) => (i === 0 ? l : indent + l)).join("\n");
+      return { html: html.slice(0, node.start) + block + html.slice(node.end), ok: true };
+    }
     case "text": {
       if (node.children.some((c) => c.tag !== "br" && c.tag !== "span" && c.tag !== "em" && c.tag !== "strong" && c.tag !== "b" && c.tag !== "i")) return { html, ok: false, why: "element has child elements; edit by hand" };
       return { html: html.slice(0, node.innerStart) + esc(op.value) + html.slice(node.innerEnd), ok: true };
@@ -468,7 +596,9 @@ export function specOf(dir, screenId) {
         const cls = (c.attrs.class ?? "").split(/\s+/).filter(Boolean).join(".");
         const kids = idChildren(c);
         const t = kids.length ? "" : textOf(html, c);
-        const extras = [c.attrs["data-goto"] ? `→ ${c.attrs["data-goto"]}` : "", c.attrs["data-state"] ? `state:${c.attrs["data-state"]}` : ""].filter(Boolean).join(" ");
+        const a = c.attrs;
+        const motion = a["data-motion"] ? `enter:${a["data-motion"]}${a["data-motion-speed"] ? "/" + a["data-motion-speed"] : ""}${a["data-motion-ease"] ? "/" + a["data-motion-ease"] : ""}${a["data-motion-order"] ? " #" + a["data-motion-order"] : ""}` : "";
+        const extras = [a["data-goto"] ? `→ ${a["data-goto"]}${a["data-transition"] ? ` (${a["data-transition"]})` : ""}` : "", motion, a["data-press"] ? `press:${a["data-press"]}` : "", a["data-state"] ? `state:${a["data-state"]}` : ""].filter(Boolean).join(" ");
         out.push(`${"  ".repeat(depth + 1)}${id}  <${c.tag}${cls ? "." + cls : ""}>${comp ? `  ⟨${comp}⟩` : ""}${t ? "  " + q(t, 50) : ""}${extras ? "  " + extras : ""}`);
         rec(c, depth + 1);
       }
@@ -477,4 +607,54 @@ export function specOf(dir, screenId) {
     out.push("");
   }
   return out.join("\n");
+}
+
+// ---------------------------------------------------------------------------------------------
+// Component catalog: every single-class rule in components.css that the screens actually use,
+// with a real instance to show, grouped by platform (each platform renders with its own kit).
+
+export const platformOf = (device) => (device === "iphone" ? "ios" : device === "android" ? "android" : "web");
+
+export function componentCatalog(dir) {
+  const P = paths(dir);
+  const project = loadProject(dir);
+  const css = safeRead(P.components).replace(/\/\*[\s\S]*?\*\//g, "");
+  const order = [];
+  for (const m of css.matchAll(/([^{}]+)\{/g)) {
+    for (const sel of m[1].split(",").map((x) => x.trim())) {
+      const c = /^\.([a-zA-Z][\w-]*)$/.exec(sel);
+      if (c && !order.includes(c[1])) order.push(c[1]);
+    }
+  }
+  const wanted = project.components ?? order;
+  const found = new Map();
+  for (const s of project.screens) {
+    const html = safeRead(path.join(P.dir, s.file));
+    for (const n of walk(parseHtml(html))) {
+      const classes = (n.attrs.class ?? "").split(/\s+/);
+      for (const cls of classes) {
+        if (!wanted.includes(cls)) continue;
+        const e = found.get(cls) ?? { cls, count: 0, screens: new Set(), instances: {} };
+        e.count++; e.screens.add(s.id);
+        const pf = platformOf(s.device);
+        if (!e.instances[pf]) e.instances[pf] = { html: html.slice(n.start, n.end), tag: n.tag, role: n.attrs.role, screen: s.id, classes };
+        found.set(cls, e);
+      }
+    }
+  }
+  const out = { web: [], ios: [], android: [] };
+  for (const cls of wanted) {
+    const e = found.get(cls);
+    if (!e) continue;
+    const anyInst = Object.values(e.instances)[0];
+    const base = order.find((b) => b !== cls && cls.startsWith(b + "-") && anyInst.classes.includes(b)) ?? null;
+    const interactive = new RegExp(`\\.${cls.replace(/-/g, "\\-")}(\\.[\\w-]+)*:(hover|active|focus)`).test(css);
+    for (const [pf, inst] of Object.entries(e.instances)) {
+      // Without a curated list, a component is something reused across screens or something you press.
+      const pressable = interactive || inst.tag === "button" || inst.tag === "a" || inst.role === "button";
+      if (!project.components && (inst.html.length > 1500 || (e.screens.size < 2 && !pressable))) continue;
+      out[pf].push({ cls, base, count: e.count, screens: [...e.screens], html: inst.html, screen: inst.screen, interactive: interactive || inst.tag === "button" || inst.tag === "a" || inst.role === "button" });
+    }
+  }
+  return out;
 }

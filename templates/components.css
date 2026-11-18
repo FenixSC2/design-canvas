@@ -9,3 +9,11 @@ body { font-family: var(--font-text); color: var(--color-ink); background: var(-
   background: var(--color-accent); color: var(--color-on-accent);
 }
 .btn-quiet { background: var(--color-fill); color: var(--color-ink); }
+
+/* States: every pressable component answers hover, focus, press and disabled. */
+:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
+.btn { transition: background-color var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out); }
+.btn:hover { background: var(--color-accent-hover); }
+.btn:active { transform: scale(0.98); }
+.btn:disabled, .btn[aria-disabled="true"] { background: var(--color-fill); color: var(--color-ink-3); cursor: not-allowed; }
+.btn-quiet:hover { background: var(--color-line); }

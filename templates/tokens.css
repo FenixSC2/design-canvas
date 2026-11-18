@@ -14,6 +14,8 @@
   --color-ink-3: oklch(0.52 0.01 250);
   --color-accent: oklch(0.55 0.17 250);
   --color-on-accent: oklch(0.985 0.004 250);
+  --color-accent-hover: oklch(0.49 0.17 250);
+  --color-focus: oklch(0.55 0.17 250);
 
   /* type: one scale, steps ≥ 1.2 apart */
   --font-display: system-ui, sans-serif;
@@ -46,4 +48,13 @@
   --radius-md: 12px;
   --radius-lg: 20px;
   --radius-pill: 999px;
+
+  /* motion: set from the scene (fast and settled, or slow and calm). No bounce. */
+  --duration-fast: 140ms;
+  --duration-base: 260ms;
+  --duration-slow: 420ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-emphasized: cubic-bezier(0.16, 1, 0.3, 1);
+  --stagger: 45ms;
 }

@@ -1,16 +1,15 @@
 <div class="ios-screen" data-id="spot" data-component="NavigationStack">
   <div class="ios-scroll" data-id="spot.scroll" data-component="ScrollView">
     <nav class="ios-nav" data-id="spot.nav" data-component="NavigationBar">
-      <button class="ios-nav-button" data-id="spot.back" data-goto="ios-today"><svg viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2L2 10l8 8"/></svg>Today</button>
+      <button class="ios-nav-button" data-id="spot.back" data-goto="ios-today" data-transition="push"><svg viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2L2 10l8 8"/></svg>Today</button>
       <button class="ios-nav-button" data-id="spot.save" aria-label="Saved spot"><svg viewBox="0 0 22 22" style="width:22px;height:22px" fill="currentColor"><path d="M11 1.8l2.8 5.8 6.3.8-4.6 4.4 1.2 6.3L11 16l-5.7 3.1 1.2-6.3L1.9 8.4l6.3-.8z"/></svg></button>
     </nav>
-    <header class="spot-head" data-id="spot.head">
+    <header class="spot-head" data-id="spot.head" data-motion="rise">
       <h1 class="display spot-title" data-id="spot.title">West Pier</h1>
-      <p class="spot-place" data-id="spot.place">Brighton · shingle, shelves steeply</p>
-      <span class="flag" data-id="spot.flag"><span class="flag-mark"></span><span data-id="spot.flag.label">Swim with care · lifeguards from 10:00</span></span>
+      <p class="spot-place" data-id="spot.place">Brighton · steep shingle, deep water close in</p>
     </header>
 
-    <section class="tide" data-id="spot.tide" data-component="Chart">
+    <section class="tide" data-id="spot.tide" data-component="Chart" data-motion="rise" data-motion-order="2">
       <div class="tide-head" data-id="spot.tide.head">
         <h2 class="eyebrow" data-id="spot.tide.label">Tide today</h2>
         <p class="tide-now num" data-id="spot.tide.now">Falling · 1.9 m now</p>
@@ -25,6 +24,8 @@
       <div class="tide-times" data-id="spot.tide.times"><span><b>01:31</b>High 4.9 m</span><span><b>07:52</b>Low 1.2 m</span><span><b>14:03</b>High 5.4 m</span><span><b>20:17</b>Low 1.0 m</span></div>
     </section>
 
+    <div class="spot-head" data-id="spot.flagrow"><span class="flag" data-id="spot.flag"><span class="flag-mark"></span><span data-id="spot.flag.label">Swim with care · lifeguards from 10:00</span></span></div>
+
     <h3 class="ios-section-label" data-id="spot.conditions.label">Conditions at 06:00</h3>
     <ul class="ios-list" data-id="spot.conditions" data-component="List">
       <li class="ios-row" data-id="spot.water"><span>Water</span><span class="ios-row-value num">13.4 °C</span></li>
@@ -35,7 +36,7 @@
     </ul>
 
     <div class="spot-cta" data-id="spot.cta">
-      <button class="btn btn-block" data-id="spot.log" data-goto="ios-log">Log a swim here</button>
+      <button class="btn btn-block" data-id="spot.log" data-goto="ios-log" data-transition="sheet" data-press="scale">Log a swim here</button>
       <p class="footnote" data-id="spot.tip">Tell someone onshore when you expect to be out.</p>
     </div>
   </div>

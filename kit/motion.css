@@ -1,0 +1,65 @@
+/* design-canvas motion kit. Motion is designed with attributes, and timing comes from the
+   project's tokens, so it reads as a spec the build can follow on any platform:
+
+   data-motion="fade|rise|scale|slide-left|slide-right|drop"   entrance when the screen appears
+   data-motion-speed="fast|base|slow"    → --duration-fast / --duration-base / --duration-slow
+   data-motion-ease="out|in-out|emphasized" → --ease-out / --ease-in-out / --ease-emphasized
+   data-motion-order="0…12"              stagger slot, × --stagger
+   data-press="scale|dim"                press feedback on anything tappable
+   data-transition="push|sheet|fade|none" on a data-goto element: how the next screen arrives
+
+   SwiftUI: rise ≈ .transition(.move(edge: .bottom).combined(with: .opacity)) with a short offset,
+   scale ≈ .scale(0.96).combined(with: .opacity), ease-out ≈ .timingCurve(0.22, 1, 0.36, 1).
+   Compose: fadeIn() + slideInVertically { it / 8 }, tween(durationMillis, easing = CubicBezierEasing(...)).
+   Web: the same keyframes, or the Web Animations API. */
+:root {
+  --motion-fast: var(--duration-fast, 160ms);
+  --motion-base: var(--duration-base, 280ms);
+  --motion-slow: var(--duration-slow, 440ms);
+  --motion-ease-out: var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1));
+  --motion-ease-in-out: var(--ease-in-out, cubic-bezier(0.65, 0, 0.35, 1));
+  --motion-ease-emphasized: var(--ease-emphasized, cubic-bezier(0.16, 1, 0.3, 1));
+  --motion-stagger: var(--stagger, 45ms);
+  --motion-distance: var(--motion-offset, 14px);
+}
+
+[data-motion] {
+  --_dur: var(--motion-base);
+  --_ease: var(--motion-ease-out);
+  animation-duration: var(--_dur);
+  animation-timing-function: var(--_ease);
+  animation-delay: calc(var(--_order, 0) * var(--motion-stagger));
+  animation-fill-mode: both;
+}
+[data-motion-speed="fast"] { --_dur: var(--motion-fast); }
+[data-motion-speed="slow"] { --_dur: var(--motion-slow); }
+[data-motion-ease="in-out"] { --_ease: var(--motion-ease-in-out); }
+[data-motion-ease="emphasized"] { --_ease: var(--motion-ease-emphasized); }
+[data-motion-order="1"] { --_order: 1; } [data-motion-order="2"] { --_order: 2; } [data-motion-order="3"] { --_order: 3; }
+[data-motion-order="4"] { --_order: 4; } [data-motion-order="5"] { --_order: 5; } [data-motion-order="6"] { --_order: 6; }
+[data-motion-order="7"] { --_order: 7; } [data-motion-order="8"] { --_order: 8; } [data-motion-order="9"] { --_order: 9; }
+[data-motion-order="10"] { --_order: 10; } [data-motion-order="11"] { --_order: 11; } [data-motion-order="12"] { --_order: 12; }
+
+[data-motion="fade"] { animation-name: dc-fade; }
+[data-motion="rise"] { animation-name: dc-rise; }
+[data-motion="scale"] { animation-name: dc-scale; }
+[data-motion="slide-left"] { animation-name: dc-slide-left; }
+[data-motion="slide-right"] { animation-name: dc-slide-right; }
+[data-motion="drop"] { animation-name: dc-drop; }
+@keyframes dc-fade { from { opacity: 0; } }
+@keyframes dc-rise { from { opacity: 0; transform: translateY(var(--motion-distance)); } }
+@keyframes dc-scale { from { opacity: 0; transform: scale(0.96); } }
+@keyframes dc-slide-left { from { opacity: 0; transform: translateX(calc(var(--motion-distance) * 2)); } }
+@keyframes dc-slide-right { from { opacity: 0; transform: translateX(calc(var(--motion-distance) * -2)); } }
+@keyframes dc-drop { from { opacity: 0; transform: translateY(calc(var(--motion-distance) * -1)); } }
+
+[data-press] { transition: transform var(--motion-fast) var(--motion-ease-out), opacity var(--motion-fast) var(--motion-ease-out); }
+[data-press="scale"]:active, [data-press="scale"][data-dc-state~="pressed"] { transform: scale(0.97); }
+[data-press="dim"]:active, [data-press="dim"][data-dc-state~="pressed"] { opacity: 0.6; }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-motion] { animation-name: dc-fade; animation-duration: var(--motion-fast); animation-delay: 0s; }
+  [data-press] { transition: none; }
+}
+html.dc-reduce-motion [data-motion] { animation-name: dc-fade; animation-duration: var(--motion-fast); animation-delay: 0s; }
+html.dc-still [data-motion] { animation: none; }

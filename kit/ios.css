@@ -41,7 +41,8 @@ html[data-platform="ios"] body {
 }
 .ios-row + .ios-row::before { content: ""; position: absolute; top: 0; left: var(--space-4, 16px); right: 0; border-top: 0.5px solid var(--color-line, oklch(0.88 0.005 260)); }
 .ios-row-value { margin-left: auto; color: var(--color-ink-2, oklch(0.45 0.01 260)); }
-.ios-chevron { width: 8px; height: 13px; flex: none; color: var(--color-ink-3, oklch(0.7 0.01 260)); }
+.ios-chevron { width: 8px; height: 13px; flex: none; margin-left: auto; color: var(--color-ink-3, oklch(0.7 0.01 260)); }
+.ios-row-value + .ios-chevron { margin-left: 0; }
 .ios-tabbar {
   display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; flex: none;
   padding: 6px 0 var(--safe-bottom); min-height: calc(49px + var(--safe-bottom));

@@ -13,6 +13,7 @@
     <span class="brand-mark" aria-hidden="true"></span>
     <strong id="proj-name">Design Canvas</strong>
     <span id="proj-meta" class="muted"></span>
+    <button id="proposal-chip" class="chip proposal" hidden></button>
   </div>
   <div class="modes" role="toolbar" aria-label="Mode">
     <button data-mode="select" aria-pressed="true" title="Select, edit, move and resize (V)">
@@ -23,6 +24,16 @@
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M4.5 3v10l8-5z"/></svg>Preview <kbd>P</kbd></button>
   </div>
   <div class="bar-right">
+    <div class="viewtoggles" role="group" aria-label="Show on the canvas">
+      <button data-show="breakpoints" aria-pressed="false" title="Show narrower widths of web screens (B)">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="8" height="10" rx="1.3"/><rect x="10.5" y="5" width="4.5" height="8" rx="1.2"/></svg>Widths</button>
+      <button data-show="components" aria-pressed="false" title="Component catalog: edit a component once for every screen (K)">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="2.5"/><rect x="2" y="9" width="5" height="5" rx="1"/><path d="M9 11.5h5M11.5 9v5"/></svg>Components</button>
+      <button data-show="build" aria-pressed="false" title="Show the build next to each mock">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 13.5h12M4 11V6l4-3 4 3v5"/><path d="M7 11V8.5h2V11"/></svg>Build</button>
+    </div>
+    <button id="play" class="chip" title="Play the prototype with its transitions (⇧P)"><svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor"><path d="M4.5 3v10l8-5z"/></svg>Play</button>
+    <button id="test" class="chip" title="Build the app and run it: simulator, device or browser">Test build</button>
     <button id="audit-chip" class="chip" title="Design-system audit"><span class="dot"></span><span id="audit-label">Audit</span></button>
     <div class="zoom">
       <button id="zoom-out" title="Zoom out (−)">−</button>
@@ -45,11 +56,14 @@
       <button role="tab" data-tab="inspect" aria-selected="true">Inspect</button>
       <button role="tab" data-tab="audit" aria-selected="false">Audit<span class="n" id="n-audit"></span></button>
       <button role="tab" data-tab="comments" aria-selected="false">Comments<span class="n" id="n-comments"></span></button>
+      <button role="tab" data-tab="build" aria-selected="false">Build<span class="n" id="n-build"></span></button>
+      <button role="tab" data-tab="proposal" aria-selected="false" hidden>Proposal</button>
     </nav>
     <div id="panel"></div>
   </aside>
 </div>
 <div id="shield"></div>
+<div id="player" role="dialog" aria-label="Prototype player"></div>
 <div id="popover" role="dialog"></div>
 <div id="banner" role="status"></div>
 <div id="toast" role="status"></div>

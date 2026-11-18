@@ -19,6 +19,19 @@ body { font-family: var(--font-text); color: var(--color-ink); background: var(-
 .btn-sm { min-height: 44px; padding: 0 var(--space-5); font-size: var(--text-sm); }
 .link-quiet { font-size: var(--text-md); font-weight: var(--weight-semibold); color: var(--color-ink); text-underline-offset: 4px; }
 
+/* ---- interaction states: every pressable thing answers hover, focus and press ---- */
+:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
+.btn, .btn-quiet, .quick-log, .link-quiet, .wordmark { transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out); }
+.btn:hover { background: var(--color-accent-hover); }
+.btn:active { transform: scale(0.98); background: var(--color-accent-hover); }
+.btn:disabled, .btn[aria-disabled="true"] { background: var(--color-fill); color: var(--color-ink-3); cursor: not-allowed; }
+.btn-quiet:hover { background: var(--color-fill-2); }
+.btn-quiet:active { transform: scale(0.98); background: var(--color-fill-2); }
+.link-quiet:hover, .wordmark:hover { color: var(--color-accent); }
+.link-quiet:active, .wordmark:active { color: var(--color-accent-hover); }
+.quick-log:hover span { color: var(--color-accent); }
+.quick-log:active { transform: scale(0.98); }
+
 /* ---- lifeguard flag status ---- */
 .flag-mark { display: inline-block; width: 18px; height: 18px; flex: none; border-radius: var(--radius-xs); background: linear-gradient(var(--color-flag-red) 50%, var(--color-flag-yellow) 50%); }
 .flag {
@@ -61,6 +74,13 @@ body { font-family: var(--font-text); color: var(--color-ink); background: var(-
 .ios-row-value { font-weight: var(--weight-semibold); color: var(--color-ink); }
 .quick-log { display: flex; align-items: center; justify-content: center; gap: var(--space-1); width: 100%; min-height: 44px; margin: var(--space-4) 0 var(--space-7); border: 0; background: none; font-size: var(--text-sm); color: var(--color-ink-3); }
 .quick-log span { font-weight: var(--weight-semibold); color: var(--color-ink); text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---- iOS: Today, verdict-first card (picked from variants) ---- */
+.v-verdict-top { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); }
+.v-verdict-line { margin-top: var(--space-6); font-size: var(--text-2xl); }
+.v-verdict-why { margin-top: var(--space-2); font-size: var(--text-sm); color: var(--color-ink-2); }
+.v-verdict-grid { display: grid; grid-template-columns: 1.3fr 1fr 1fr 1fr; gap: var(--space-3); margin: var(--space-6) 0 0; padding-top: var(--space-4); border-top: 1px solid var(--color-line); }
+.v-verdict-temp dd { font-family: var(--font-display); font-stretch: 125%; font-weight: var(--weight-black); font-size: var(--text-xl); line-height: 1; }
 
 /* ---- iOS: empty Today ---- */
 .empty { display: flex; flex-direction: column; gap: var(--space-4); margin: var(--space-8) var(--space-6) 0; }
@@ -105,7 +125,7 @@ body { font-family: var(--font-text); color: var(--color-ink); background: var(-
 .notes { width: 100%; min-height: 88px; padding: 0; border: 0; resize: none; background: none; font-size: var(--text-md); line-height: 1.4; }
 
 /* ---- web: landing ---- */
-.site { min-width: 1200px; }
+.site { overflow-x: clip; }
 .site-nav { display: flex; align-items: center; gap: var(--space-7); max-width: 1312px; margin: 0 auto; padding: var(--space-6) var(--space-9); }
 .wordmark { display: inline-flex; align-items: center; gap: var(--space-2); font-family: var(--font-display); font-stretch: 125%; font-size: var(--text-lg); font-weight: var(--weight-black); letter-spacing: -0.02em; text-decoration: none; }
 .site-links { display: flex; gap: var(--space-6); margin-left: auto; }
@@ -146,3 +166,42 @@ body { font-family: var(--font-text); color: var(--color-ink); background: var(-
 .site-foot { display: flex; gap: var(--space-7); max-width: 1312px; margin: 0 auto; padding: var(--space-8) var(--space-9) var(--space-9); font-size: var(--text-sm); color: var(--color-ink-3); }
 .site-foot .wordmark { font-size: var(--text-md); color: var(--color-ink); }
 .site-foot span:last-child { margin-left: auto; }
+
+/* ---- web: landing, narrower widths ---- */
+@media (max-width: 900px) {
+  .site-nav { gap: var(--space-5); padding: var(--space-5) var(--space-7); }
+  .site-links { gap: var(--space-5); }
+  .hero { grid-template-columns: 1fr; gap: var(--space-8); padding: var(--space-9) var(--space-7) var(--space-10); }
+  .hero-title { font-size: var(--text-4xl); }
+  .slip { max-width: 520px; }
+  .how, .coverage { padding: var(--space-9) var(--space-7); }
+  .steps { gap: var(--space-6); margin-top: var(--space-8); }
+  .coverage { grid-template-columns: 1fr; gap: var(--space-7); }
+  .quote { padding: var(--space-9) var(--space-7); }
+  .quote p { font-size: var(--text-3xl); }
+  .site-foot { flex-wrap: wrap; gap: var(--space-3) var(--space-6); padding: var(--space-8) var(--space-7); }
+}
+@media (max-width: 600px) {
+  .site-nav { padding: var(--space-4) var(--space-5); }
+  .site-links { display: none; }
+  .site-nav .btn-sm { margin-left: auto; }
+  .wordmark { min-height: 44px; }
+  .hero-actions .link-quiet { display: flex; align-items: center; justify-content: center; min-height: 44px; }
+  .hero { gap: var(--space-7); padding: var(--space-7) var(--space-5) var(--space-9); }
+  .hero-title { font-size: var(--text-3xl); }
+  .lede { margin-top: var(--space-5); font-size: var(--text-md); }
+  .hero-actions { flex-direction: column; align-items: stretch; gap: var(--space-5); margin-top: var(--space-7); }
+  .hero-actions .link-quiet { text-align: center; }
+  .slip { padding: var(--space-6); }
+  .slip-temp { margin: var(--space-7) 0 var(--space-4); font-size: var(--text-4xl); }
+  .slip-grid { gap: var(--space-4); }
+  .how, .coverage { padding: var(--space-8) var(--space-5); }
+  .section-title { font-size: var(--text-2xl); }
+  .steps { grid-template-columns: 1fr; gap: var(--space-7); margin-top: var(--space-7); }
+  .regions { grid-template-columns: repeat(2, 1fr); gap: 0 var(--space-5); }
+  .quote { padding: var(--space-8) var(--space-5); }
+  .quote p { font-size: var(--text-2xl); }
+  .site-foot { flex-direction: column; padding: var(--space-7) var(--space-5) var(--space-8); }
+  .site-foot span:last-child { margin-left: 0; }
+}
+

@@ -52,6 +52,49 @@ mocking.
 `dc lint` catches the mechanical ones; the Audit tab catches off-scale values, contrast and
 tap targets; the rest is your eye. Look at every screen at 100% before showing it.
 
+## Interaction states
+
+Every pressable component has four, designed as carefully as its rest state:
+
+- **Hover**: a small, certain change (a shade darker fill, an underline, a color shift).
+  Not a lift-and-shadow on everything.
+- **Focus**: a visible ring, 2px, offset, in a color that contrasts with every surface it sits
+  on. One global `:focus-visible` rule is fine; never `outline: none` without a replacement.
+- **Pressed**: immediate. Darker, or a 0.97–0.98 scale on touch targets.
+- **Disabled**: clearly unavailable without disappearing: a fill and ink step toward the
+  background, `cursor: not-allowed`, and still readable (it's still text).
+
+Switch an element to each state on the canvas and look at it, the way the user will.
+
+## Motion
+
+Motion is part of the design system, not decoration added at the end.
+
+- **It explains something.** Where a screen came from (push, sheet), what is new (an entrance),
+  what responded to a touch (press). If it explains nothing, remove it.
+- **Timing comes from the scene.** A swimmer with cold hands needs things fast and settled;
+  a meditation app can breathe. Set `--duration-fast` (~120–160ms, feedback),
+  `--duration-base` (~220–300ms, entrances), `--duration-slow` (~360–450ms, screen
+  transitions) from that, and use nothing else.
+- **Ease out, exponentially.** `cubic-bezier(0.22, 1, 0.36, 1)` or similar for arrivals;
+  `in-out` for things that move across the screen. No bounce, no elastic, no overshoot.
+- **Transform and opacity only.** Never animate width, height, top, left, margin or padding.
+- **Stagger in reading order, briefly.** 30–60ms between blocks, a screen's whole entrance
+  done within ~500ms. Three or four slots, not one per row.
+- **Small distances.** Entrances move 8–16px, not across the screen.
+- **Respect reduced motion.** The kit swaps every entrance for a short fade; check it with the
+  player's Reduce motion switch.
+- Play it with the prototype player at ×4 slow motion to see the curve, not just the result.
+
+## Responsive
+
+- Design the narrow widths, don't just let them happen. Each web screen shows at its
+  breakpoints next to the desktop frame; look at each.
+- Reflow, don't shrink: grids become single columns, side-by-side becomes stacked, secondary
+  navigation folds away. Type steps down the scale at the breakpoint (a 96px headline becomes
+  64, then 46), it doesn't scale linearly.
+- Nothing scrolls sideways (the audit errors on it), and tap targets stay 44pt on phone widths.
+
 ## States are screens
 
 A screen with data has at least: loading, empty, error, and the normal state. Forms have

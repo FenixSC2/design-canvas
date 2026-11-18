@@ -3,12 +3,84 @@
   "summary": "Morning sea conditions for open-water swimmers: tide, water temperature, swell and lifeguard flags for the beaches they actually swim at.",
   "scene": "An open-water swimmer on a cold shingle beach at 6am, phone in one damp hand, low sun in their eyes, deciding whether to go in.",
   "defaultDevice": "iphone",
-  "fonts": ["https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap"],
+  "fonts": [
+    "https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap"
+  ],
+  "breakpoints": [
+    834,
+    390
+  ],
+  "components": [
+    "btn",
+    "btn-quiet",
+    "btn-sm",
+    "link-quiet",
+    "quick-log",
+    "flag",
+    "flag-mark",
+    "dot",
+    "eyebrow",
+    "footnote",
+    "ios-nav-button",
+    "stepper"
+  ],
+  "build": {
+    "web": {
+      "url": "../build-web/",
+      "routes": {
+        "web-home": "index.html"
+      }
+    },
+    "ios": {
+      "scheme": "Tidewater",
+      "bundleId": "app.tidewater.ios",
+      "links": {
+        "ios-today": "tidewater://today",
+        "ios-spot": "tidewater://spot/west-pier",
+        "ios-log": "tidewater://log?spot=west-pier"
+      }
+    }
+  },
   "screens": [
-    { "id": "web-home", "name": "Landing", "file": "screens/web-home.html", "device": "desktop", "address": "tidewater.app" },
-    { "id": "ios-today", "name": "Today", "file": "screens/ios-today.html", "device": "iphone" },
-    { "id": "ios-today-empty", "name": "Today", "state": "empty", "of": "ios-today", "file": "screens/ios-today-empty.html", "device": "iphone" },
-    { "id": "ios-spot", "name": "Spot", "file": "screens/ios-spot.html", "device": "iphone" },
-    { "id": "ios-log", "name": "Log swim", "file": "screens/ios-log.html", "device": "iphone", "statusBar": "light" }
+    {
+      "id": "web-home",
+      "name": "Landing",
+      "file": "screens/web-home.html",
+      "device": "desktop",
+      "address": "tidewater.app"
+    },
+    {
+      "id": "ios-today",
+      "name": "Today",
+      "file": "screens/ios-today.html",
+      "device": "iphone"
+    },
+    {
+      "id": "ios-today-empty",
+      "name": "Today",
+      "state": "empty",
+      "of": "ios-today",
+      "file": "screens/ios-today-empty.html",
+      "device": "iphone"
+    },
+    {
+      "id": "ios-spots",
+      "name": "Spots",
+      "file": "screens/ios-spots.html",
+      "device": "iphone"
+    },
+    {
+      "id": "ios-spot",
+      "name": "Spot",
+      "file": "screens/ios-spot.html",
+      "device": "iphone"
+    },
+    {
+      "id": "ios-log",
+      "name": "Log swim",
+      "file": "screens/ios-log.html",
+      "device": "iphone",
+      "statusBar": "light"
+    }
   ]
 }

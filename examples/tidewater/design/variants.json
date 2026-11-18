@@ -1,0 +1,35 @@
+{
+  "sets": [
+    {
+      "id": "v1",
+      "screen": "ios-today",
+      "target": "today.primary",
+      "prompt": "calmer: the temperature should lead, but less shouting",
+      "status": "resolved",
+      "options": [
+        {
+          "id": "a",
+          "label": "Quieter number",
+          "rationale": "Same card, the temperature drops from 96 to 64 and sits beside the place name, so it still leads without shouting. Readings read as one line.",
+          "html": "<section class=\"spot-hero v-quiet\" data-id=\"today.primary\" data-component=\"NavigationLink\" data-goto=\"ios-spot\" data-transition=\"push\" data-motion=\"rise\" data-motion-order=\"1\" data-press=\"scale\">\n  <div class=\"v-quiet-top\" data-id=\"today.primary.top\">\n    <div class=\"v-quiet-place\">\n      <h2 class=\"spot-name\" data-id=\"today.primary.name\">West Pier, Brighton</h2>\n    </div>\n    <p class=\"water-temp display v-quiet-temp\" data-id=\"today.primary.temp\"><span class=\"num\">13.4°</span></p>\n  </div>\n  <span class=\"flag\" data-id=\"today.primary.flag\"><span class=\"flag-mark\"></span><span data-id=\"today.primary.flag.label\">Swim with care · unpatrolled until 10:00</span></span>\n  <p class=\"v-quiet-line num\" data-id=\"today.primary.readings\">Swell 0.4 m · wind 9 kn SW · low tide 07:52</p>\n  <div class=\"window\" data-id=\"today.window\">\n    <div class=\"window-track\" aria-hidden=\"true\"><span class=\"window-best\"></span></div>\n    <p class=\"window-label\" data-id=\"today.window.label\"><strong>Best window 06:30 to 08:10.</strong> Calm until the onshore breeze picks up.</p>\n  </div>\n</section>",
+          "css": ".v-quiet-top { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4); }\n.v-quiet-place { min-width: 0; }\n.v-quiet .flag { margin-top: var(--space-3); }\n.v-quiet-temp { margin: 0; font-size: var(--text-4xl); }\n.v-quiet-line { margin-top: var(--space-5); padding-top: var(--space-4); border-top: 1px solid var(--color-line); font-size: var(--text-sm); color: var(--color-ink-2); }"
+        },
+        {
+          "id": "b",
+          "label": "No card",
+          "rationale": "Drops the white card: the reading sits straight on the sand, held by two rules. Less boxing is the calmest change, and the number stays large.",
+          "html": "<section class=\"v-open\" data-id=\"today.primary\" data-component=\"NavigationLink\" data-goto=\"ios-spot\" data-transition=\"push\" data-motion=\"rise\" data-motion-order=\"1\" data-press=\"scale\">\n  <div class=\"v-open-top\" data-id=\"today.primary.top\">\n    <h2 class=\"spot-name\" data-id=\"today.primary.name\">West Pier, Brighton</h2>\n    <span class=\"flag\" data-id=\"today.primary.flag\"><span class=\"flag-mark\"></span><span data-id=\"today.primary.flag.label\">Swim with care · unpatrolled until 10:00</span></span>\n  </div>\n  <p class=\"water-temp display v-open-temp\" data-id=\"today.primary.temp\"><span class=\"num\">13.4°</span><span class=\"unit\">water</span></p>\n  <dl class=\"readings v-open-readings\" data-id=\"today.primary.readings\">\n    <div class=\"reading\" data-id=\"today.primary.swell\"><dt>Swell</dt><dd>0.4 m</dd></div>\n    <div class=\"reading\" data-id=\"today.primary.wind\"><dt>Wind</dt><dd>9 kn SW</dd></div>\n    <div class=\"reading\" data-id=\"today.primary.tide\"><dt>Low tide</dt><dd>07:52</dd></div>\n  </dl>\n  <p class=\"window-label v-open-window\" data-id=\"today.window\"><strong>Best window 06:30 to 08:10.</strong> Calm until the onshore breeze picks up.</p>\n</section>",
+          "css": ".v-open { margin: var(--space-5) var(--space-4) 0; padding: var(--space-4) var(--space-1) 0; border-top: 2px solid var(--color-ink); }\n.v-open-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); }\n.v-open-temp { margin: var(--space-5) 0 0; font-size: var(--text-5xl); }\n.v-open-readings { margin-top: var(--space-5); }\n.v-open-window { margin-top: var(--space-4); padding-bottom: var(--space-5); border-bottom: 1px solid var(--color-line); }"
+        },
+        {
+          "id": "c",
+          "label": "Verdict first",
+          "rationale": "Leads with the decision the swimmer came for, 'go before 08:10', in the display face. The temperature becomes the first of four readings, still the biggest of them.",
+          "html": "<section class=\"spot-hero v-verdict\" data-id=\"today.primary\" data-component=\"NavigationLink\" data-goto=\"ios-spot\" data-transition=\"push\" data-motion=\"rise\" data-motion-order=\"1\" data-press=\"scale\">\n  <div class=\"v-verdict-top\" data-id=\"today.primary.top\">\n    <h2 class=\"spot-name\" data-id=\"today.primary.name\">West Pier, Brighton</h2>\n    <span class=\"flag\" data-id=\"today.primary.flag\"><span class=\"flag-mark\"></span><span data-id=\"today.primary.flag.label\">Swim with care · unpatrolled until 10:00</span></span>\n  </div>\n  <p class=\"display v-verdict-line\" data-id=\"today.window.label\">Go before 08:10</p>\n  <p class=\"v-verdict-why\" data-id=\"today.window\">Calm until the onshore breeze picks up mid-morning.</p>\n  <dl class=\"v-verdict-grid\" data-id=\"today.primary.readings\">\n    <div class=\"reading v-verdict-temp\" data-id=\"today.primary.temp\"><dt>Water</dt><dd class=\"num\">13.4°</dd></div>\n    <div class=\"reading\" data-id=\"today.primary.swell\"><dt>Swell</dt><dd>0.4 m</dd></div>\n    <div class=\"reading\" data-id=\"today.primary.wind\"><dt>Wind</dt><dd>9 kn</dd></div>\n    <div class=\"reading\" data-id=\"today.primary.tide\"><dt>Low tide</dt><dd>07:52</dd></div>\n  </dl>\n</section>",
+          "css": ".v-verdict-top { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); }\n.v-verdict-line { margin-top: var(--space-6); font-size: var(--text-2xl); }\n.v-verdict-why { margin-top: var(--space-2); font-size: var(--text-sm); color: var(--color-ink-2); }\n.v-verdict-grid { display: grid; grid-template-columns: 1.3fr 1fr 1fr 1fr; gap: var(--space-3); margin: var(--space-6) 0 0; padding-top: var(--space-4); border-top: 1px solid var(--color-line); }\n.v-verdict-temp dd { font-family: var(--font-display); font-stretch: 125%; font-weight: var(--weight-black); font-size: var(--text-xl); line-height: 1; }"
+        }
+      ],
+      "picked": "c"
+    }
+  ]
+}
