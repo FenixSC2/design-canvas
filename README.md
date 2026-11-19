@@ -12,7 +12,7 @@ Test button runs the build and diffs it against them.
 
 ![The canvas: a web landing page and four iOS screens, one element selected](docs/canvas.jpg)
 
-It's the frontend counterpart of plan-graph: plan-graph shows what every screen *does*; this
+It's the frontend counterpart of [plan-graph](https://github.com/FenixSC2/plan-graph): plan-graph shows what every screen *does*; this
 shows what every screen *looks like*, how it moves, and whether the build got it right. The two
 will connect through the screen ids later.
 
@@ -73,7 +73,7 @@ agent drafts tokens → components (with states) → screens (with widths and mo
 
 ## What keeps the quality up
 
-The goal is that the default output is good, not that the user has to catch problems.
+The default output should already be good, so the user isn't the one catching problems.
 
 - **Tokens are the only choices.** The inspector offers the scale, not a free-form px field
   (raw values are possible, and flagged to the agent).
@@ -88,7 +88,7 @@ The goal is that the default output is good, not that the user has to catch prob
   em dashes and lorem ipsum, images without alt, sketches nobody built.
 - **A craft reference** the agent reads before drafting, which defers to impeccable when present.
 
-## Apps, not just websites
+## Native apps
 
 Native screens are mocked in HTML that is structured like the native UI, so the agent can
 rebuild it the same way every time:
@@ -121,8 +121,15 @@ rebuild it the same way every time:
 
 ## Try it
 
+You need **Node 22 or newer**. `compare` and the Test build button also need Chrome,
+Chromium, Edge or Brave (or set `CHROME_PATH`). There's nothing to install.
+
 ```bash
-node scripts/canvas.mjs serve examples/tidewater/design
+git clone https://github.com/FenixSC2/design-canvas.git
+```
+
+```bash
+cd design-canvas && node scripts/canvas.mjs serve examples/tidewater/design
 ```
 
 Open the URL it prints. The example is a sea-swim conditions product: a landing page at three
@@ -151,9 +158,16 @@ node scripts/canvas.mjs apply examples/tidewater/design
 node scripts/canvas.mjs done examples/tidewater/design --summary "What I did beyond your edits"
 ```
 
-Start a new design with `node scripts/canvas.mjs init design --device iphone`. As a skill,
-install this folder as `~/.claude/skills/design-canvas` and ask Claude to design your app's
-screens; `SKILL.md` drives the whole loop.
+Start a new design with `node scripts/canvas.mjs init design --device iphone`.
+
+## Install as a skill
+
+Clone it into your Claude Code skills folder, then ask Claude to design your app's screens.
+`SKILL.md` drives the whole loop.
+
+```bash
+git clone https://github.com/FenixSC2/design-canvas.git ~/.claude/skills/design-canvas
+```
 
 ## What's in it
 
@@ -193,3 +207,7 @@ screens; `SKILL.md` drives the whole loop.
   token passes, and a sum of a safe-area inset and a token is treated as on-scale.
 - Running on a device is the agent's job (its build tools, your device); the canvas asks for
   it and shows the comparison afterwards, but it can't drive a physical phone itself.
+
+## License
+
+[MIT](LICENSE)
